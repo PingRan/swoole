@@ -6,8 +6,8 @@ go(function(){
     {
         echo "connect failed. Error: {$client->errCode}\n";
     }
-    $res = fwrite(STDOUT,"请输入");
-
+    fwrite(STDOUT,"请输入");
+    $res = fgets(STDIN);
     $client->send($res);
     echo $client->recv();
     $client->close();
