@@ -1,5 +1,9 @@
 <?php
-$server  =  new Swoole\Server('127.0.0.1',9501);
+$server  =  new Swoole\Server('0.0.0.0',9501);
+
+$server->set(
+    ['daemonize' => true]
+);
 
 $server->on('Connect', function ($server,$fd){
     echo "Client:Connect.\n";
