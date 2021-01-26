@@ -7,11 +7,31 @@ class  WS{
     {
         $this->ws = new Swoole\WebSocket\Server('0.0.0.0', 9501);
 
+        $this->ws->set([
+            'worker_num' => 2,
+            'task_worker_num' => 2
+        ]);
+
         //监听WebSocket连接打开事件
         $this->ws->on('open',[$this,'OnOpen']);
         $this->ws->on('message',[$this,'OnMessage']);
+        $this->ws->on('task',[$this,'OnTask']);
+        $this->ws->on('finish',[$this,'OnFinish']);
         $this->ws->on('close',[$this,'OnClose']);
         $this->ws->start();
+    }
+
+    public function OnTask($ws,$task_id,$from_id,$data)
+    {
+        sleep(10);
+        return $data;
+    }
+
+    public function OnFinish($ws,$task_id,$data)
+    {
+        var_dump('task_id'.$task_id);
+        var_dump($data);
+        
     }
 
     public function OnOpen($ws,$request)
@@ -24,6 +44,8 @@ class  WS{
         echo "信息：{$frame->data}\n";
         foreach ($ws->connections as $fd){
                 if($fd == $frame->fd){
+                    $ws->task($frame->data);
+
                     $ws->push($fd,"我：".$frame->data);
                 }else{
                     $ws->push($fd,"对方：{$frame->data}");
