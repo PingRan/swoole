@@ -41,8 +41,13 @@ class  WS{
     }
     public function OnMessage($ws,$frame)
     {
-        echo "信息：{$frame->data}\n";
-        foreach ($ws->connections as $fd){
+        if($frame->data == '广播'){
+            foreach ( $ws->connections as  $fb){
+                $ws->push($fb,'这是通知消息');
+            }
+        }else{
+            echo "信息：{$frame->data}\n";
+            foreach ($ws->connections as $fd){
                 if($fd == $frame->fd){
                     $ws->task($frame->data);
 
@@ -50,7 +55,9 @@ class  WS{
                 }else{
                     $ws->push($fd,"对方：{$frame->data}");
                 }
+            }
         }
+        
     }
 
     public function OnClose($ws,$fd)
